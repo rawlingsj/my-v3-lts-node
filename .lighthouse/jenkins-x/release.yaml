@@ -44,8 +44,21 @@ spec:
           resources: {}
         - name: promote-helm-release
           resources: {}
-        - name: promote-jx-promote
+        - image: rawlingsj80/argo:wip1
+          name: promote-argo-promote
           resources: {}
+          script: |
+            #!/usr/bin/env sh
+            source .jx/variables.sh
+            argocd login argocd-server.argocd:80 --insecure --username admin --password $TOKEN
+            sleep infinity
+            argocd app create guestbook --repo https://github.com/argoproj/argocd-example-apps.git --path guestbook --dest-server https://kubernetes.default.svc --dest-namespace default
+          env:
+          - name: TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: argocd-admin-secret
+                key: password
         volumes:
         - name: npmrc
           secret:
